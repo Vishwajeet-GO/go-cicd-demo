@@ -13,13 +13,13 @@ RESTful API for task management built with Go and PostgreSQL.
 
 - Go 1.21+
 - Gin Framework
-- PostgreSQL 15+
+- PostgreSQL 18+
 
 ## Quick Start
 
 ### Prerequisites
 - Go 1.21+
-- PostgreSQL 15+
+- PostgreSQL 18+
 
 ### Installation
 ```bash
