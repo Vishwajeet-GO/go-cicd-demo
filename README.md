@@ -46,4 +46,4 @@ go run cmd/api/main.go
 
 **Vishwajeet Yadav**
 - GitHub: @Vishwajeet-GO
-- Email: yadavvishwajeet@gmail.com
+- Email: yadavvishwajeet2004@gmail.com
