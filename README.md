@@ -23,7 +23,7 @@ RESTful API for task management built with Go and PostgreSQL.
 
 ### Installation
 ```bash
-git clone https://github.com/Vishwajeet-GO/go-cicd-demo.git
+git clone https://github.com/Vishwajeet-GO/go-cicd-demo
 cd go-cicd-demo
 go mod download
 cp .env.example .env
