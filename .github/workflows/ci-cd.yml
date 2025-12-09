@@ -71,14 +71,15 @@ jobs:
       uses: docker/setup-buildx-action@v3
     
     - name: Build Docker image
-      run: docker build -t go-task-api:${{ github.sha }} .
-    
-    - name: Verify image created
       run: |
+        docker build -t go-task-api:${{ github.sha }} .
         echo "✅ Docker image built successfully!"
-        docker images | grep go-task-api
+    
+    - name: Verify image size
+      run: |
         SIZE=$(docker images go-task-api:${{ github.sha }} --format "{{.Size}}")
         echo "📦 Image size: $SIZE"
+        docker images | grep go-task-api
 
   # Job 4: Code Quality
   lint:
