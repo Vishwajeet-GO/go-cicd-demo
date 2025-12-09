@@ -11,21 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateTask - Naya task banata hai
-// POST /api/tasks
 func CreateTask(c *gin.Context) {
 	var task models.Task
-
-	// Request body se data nikalo aur Task struct mein daalo
 	if err := c.ShouldBindJSON(&task); err != nil {
-		// Agar JSON galat format mein hai
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request format",
 		})
 		return
 	}
 
-	// Validation - Title khali nahi hona chahiye
 	if task.Title == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Title is required",
@@ -33,7 +27,6 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	// Database mein insert karo
 	query := `
         INSERT INTO tasks (title, description, completed, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5)
@@ -48,7 +41,7 @@ func CreateTask(c *gin.Context) {
 		task.Completed,
 		now,
 		now,
-	).Scan(&task.ID) // ID wapas le lo jo database ne generate kiya
+	).Scan(&task.ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -57,16 +50,12 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	// Timestamps set karo
 	task.CreatedAt = now
 	task.UpdatedAt = now
 
-	// Success response bhejo
 	c.JSON(http.StatusCreated, task)
 }
 
-// GetTasks - Saare tasks return karta hai
-// GET /api/tasks
 func GetTasks(c *gin.Context) {
 	query := `
         SELECT id, title, description, completed, created_at, updated_at
@@ -74,7 +63,6 @@ func GetTasks(c *gin.Context) {
         ORDER BY created_at DESC
     `
 
-	// Database se query run karo
 	rows, err := database.DB.Query(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -82,16 +70,13 @@ func GetTasks(c *gin.Context) {
 		})
 		return
 	}
-	defer rows.Close() // Function khatam hone par rows close karo (cleanup)
+	defer rows.Close()
 
-	// Empty slice banao tasks store karne ke liye
 	tasks := []models.Task{}
 
-	// Har row ko iterate karo
 	for rows.Next() {
 		var task models.Task
 
-		// Row se data nikalo aur struct mein daalo
 		err := rows.Scan(
 			&task.ID,
 			&task.Title,
@@ -102,26 +87,20 @@ func GetTasks(c *gin.Context) {
 		)
 
 		if err != nil {
-			continue // Agar error aaye to skip karo ye row
+			continue
 		}
 
-		tasks = append(tasks, task) // Slice mein add karo
+		tasks = append(tasks, task)
 	}
 
-	// JSON response bhejo
 	c.JSON(http.StatusOK, gin.H{
 		"tasks": tasks,
 		"count": len(tasks),
 	})
 }
 
-// GetTask - Ek specific task return karta hai (ID se)
-// GET /api/tasks/:id
 func GetTask(c *gin.Context) {
-	// URL se ID nikalo (string mein aata hai)
 	idStr := c.Param("id")
-
-	// String ko integer mein convert karo
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -137,7 +116,6 @@ func GetTask(c *gin.Context) {
         WHERE id = $1
     `
 
-	// Single row fetch karo
 	err = database.DB.QueryRow(query, id).Scan(
 		&task.ID,
 		&task.Title,
@@ -148,7 +126,6 @@ func GetTask(c *gin.Context) {
 	)
 
 	if err == sql.ErrNoRows {
-		// Task nahi mila
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "Task not found",
 		})
@@ -165,8 +142,6 @@ func GetTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-// UpdateTask - Task ko update karta hai
-// PUT /api/tasks/:id
 func UpdateTask(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -185,7 +160,6 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	// Update query
 	query := `
         UPDATE tasks
         SET title = $1, description = $2, completed = $3, updated_at = $4
@@ -208,7 +182,6 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	// Check karo koi row update hui ya nahi
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -222,8 +195,6 @@ func UpdateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-// DeleteTask - Task ko delete karta hai
-// DELETE /api/tasks/:id
 func DeleteTask(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -257,10 +228,7 @@ func DeleteTask(c *gin.Context) {
 	})
 }
 
-// HealthCheck - Server aur database health check
-// GET /health
 func HealthCheck(c *gin.Context) {
-	// Database ping karo
 	if err := database.DB.Ping(); err != nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status":   "unhealthy",

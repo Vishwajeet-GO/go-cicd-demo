@@ -6,7 +6,7 @@
 .env
 
 # IDE
-.vscode
+.antigravity
 .idea
 *.swp
 *.swo
