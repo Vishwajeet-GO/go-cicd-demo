@@ -57,7 +57,7 @@ jobs:
         name: go-task-api
         path: go-task-api
 
-  # Job 3: Docker Build (Simplified - No Runtime Test)
+  # Job 3: Docker Build
   docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
@@ -75,11 +75,14 @@ jobs:
         docker build -t go-task-api:${{ github.sha }} .
         echo "✅ Docker image built successfully!"
     
-    - name: Verify image size
+    - name: Check image details
       run: |
+ 	echo "📦 Image size: $SIZE"
+	docker images go-task-api:${{ github.sha }}
         SIZE=$(docker images go-task-api:${{ github.sha }} --format "{{.Size}}")
-        echo "📦 Image size: $SIZE"
-        docker images | grep go-task-api
+	echo "Image size: $SIZE"
+        
+        
 
   # Job 4: Code Quality
   lint:
