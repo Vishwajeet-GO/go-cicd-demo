@@ -1,7 +1,7 @@
 ﻿# Task Management API
 
 ![CI/CD Pipeline](https://github.com/Vishwajeet-GO/go-cicd-demo/workflows/Go%20CI/CD%20Pipeline/badge.svg)
-![Go Version](https://img.shields.io/badge/Go-1.21-blue)
+![Go Version](https://img.shields.io/badge/Go-1.25.5-blue)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
